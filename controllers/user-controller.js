@@ -1,4 +1,5 @@
 import { validationResult } from 'express-validator';
+
 import userService from '../services/user-service.js';
 import { ApiError } from '../exceptions/api-error.js';
 
@@ -35,7 +36,6 @@ const UserController = {
   getUserByID: async (req, res, next) => {
     try {
       const { id } = req.params;
-      if (id.length !== 25) return next(ApiError.BadRequest('Пользователь не найден'));
       const userId = req.user.userId;
       const { userDto, isFollowing } = await userService.getUserByID(id, userId);
       res.json({ ...userDto, isFollowing });

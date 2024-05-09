@@ -57,31 +57,36 @@ class UserService {
   }
 
   async getUserByID(id, userId) {
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: {
-        followers: true,
-        following: true,
-      },
-    });
-
-    if (!user) {
-      throw ApiError.BadRequest('Пользователь не найден');
-    }
-    const isFollowing = Boolean(
-      await prisma.follows.findFirst({
-        where: {
-          AND: [
-            {
-              followerId: userId,
-            },
-            { followingId: id },
-          ],
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+          followers: true,
+          following: true,
         },
-      }),
-    );
-    const userDto = new UserDto(user);
-    return { userDto, isFollowing };
+      });
+
+      if (!user) {
+        throw ApiError.BadRequest('Пользователь не найден');
+      }
+      const isFollowing = Boolean(
+        await prisma.follows.findFirst({
+          where: {
+            AND: [
+              {
+                followerId: userId,
+              },
+              { followingId: id },
+            ],
+          },
+        }),
+      );
+      const userDto = new UserDto(user);
+      return { userDto, isFollowing };
+    } catch (error) {
+      console.log(error);
+      throw ApiError.BadRequest('Пользователь не найден', error);
+    }
   }
 
   async updateUser(id, params) {

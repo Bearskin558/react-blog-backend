@@ -1,7 +1,7 @@
 import express from 'express';
 import { Router } from 'express';
 import multer from 'multer';
-import { UserController } from '../controllers/index.js';
+import { PostController, UserController } from '../controllers/index.js';
 import { body, checkSchema } from 'express-validator';
 import { schemaRegistration, schemaLogin } from '../validations-schemas/index.js';
 
@@ -19,10 +19,17 @@ const storage = multer.diskStorage({
 
 const uploads = multer({ storage });
 
+//User routes
 router.post('/registration', checkSchema(schemaRegistration), UserController.registration);
 router.post('/login', checkSchema(schemaLogin), UserController.login);
 router.get('/current', authenticateToken, UserController.current);
 router.get('/users/:id', authenticateToken, UserController.getUserByID);
 router.put('/users/:id', authenticateToken, UserController.updateUser);
+
+//Post routes
+router.post('/posts', authenticateToken, PostController.createPost);
+router.get('/posts', authenticateToken, PostController.getAllPosts);
+router.get('/posts/:id', authenticateToken, PostController.getPostById);
+router.delete('posts/:id', authenticateToken, PostController.deletePost);
 
 export default router;
