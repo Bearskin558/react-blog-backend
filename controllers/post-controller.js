@@ -1,7 +1,6 @@
-import { prisma } from '../prisma/prisma-client.js';
 import { ApiError } from '../exceptions/api-error.js';
 import postService from '../services/post-service.js';
-import findSchemas from '../prisma/findSchemas.js';
+import { ObjectId } from 'mongodb';
 
 const PostController = {
   createPost: async (req, res, next) => {
@@ -43,7 +42,17 @@ const PostController = {
       next(error);
     }
   },
-  deletePost: async (req, res, next) => {},
+  deletePost: async (req, res, next) => {
+    try {
+      const postId = req.params.id;
+      const userId = req.user.userId;
+      if (!ObjectId.isValid(postId)) return next(ApiError.NotFound('Пост не был найден'));
+      const result = await postService.deletePost(postId, userId);
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default PostController;

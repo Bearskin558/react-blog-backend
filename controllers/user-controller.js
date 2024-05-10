@@ -2,6 +2,7 @@ import { validationResult } from 'express-validator';
 
 import userService from '../services/user-service.js';
 import { ApiError } from '../exceptions/api-error.js';
+import { ObjectId } from 'mongodb';
 
 const UserController = {
   registration: async (req, res, next) => {
@@ -36,6 +37,7 @@ const UserController = {
   getUserByID: async (req, res, next) => {
     try {
       const { id } = req.params;
+      if (!ObjectId.isValid(id)) return next(ApiError.NotFound('Пользователь не найден'));
       const userId = req.user.userId;
       const { userDto, isFollowing } = await userService.getUserByID(id, userId);
       res.json({ ...userDto, isFollowing });
