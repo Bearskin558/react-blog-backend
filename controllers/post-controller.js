@@ -1,6 +1,7 @@
+import { ObjectId } from 'mongodb';
+
 import { ApiError } from '../exceptions/api-error.js';
 import postService from '../services/post-service.js';
-import { ObjectId } from 'mongodb';
 
 const PostController = {
   createPost: async (req, res, next) => {
@@ -34,7 +35,7 @@ const PostController = {
   getPostById: async (req, res, next) => {
     const postId = req.params.id;
     const userId = req.user.userId;
-
+    if (!ObjectId.isValid(postId)) return next(ApiError.NotFound('Пост не был найден'));
     try {
       const post = await postService.getPostById(postId, userId);
       res.send(post);
