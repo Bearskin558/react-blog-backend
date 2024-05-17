@@ -27,8 +27,8 @@ class PostService {
       throw ApiError.NotFound('Пост не найден');
     }
 
-    const isLikedByCurrentUser = post.likes.some((like) => like.userId === userId);
-    return { ...post, isLikedByCurrentUser };
+    const likedByUser = post.likes.some((like) => like.userId === userId);
+    return { ...post, likedByUser };
   }
   async deletePost(postId, userId) {
     const post = await prisma.post.findUnique({

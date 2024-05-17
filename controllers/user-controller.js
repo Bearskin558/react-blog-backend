@@ -24,7 +24,10 @@ const UserController = {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(ApiError.BadRequest('Введен некорректный логин или пароль'), errors);
+        return next(
+          ApiError.BadRequest('Введен неверный логин или пароль'),
+          errors,
+        );
       }
       const { email, password } = req.body;
       const token = await userService.login(email, password);
@@ -34,12 +37,16 @@ const UserController = {
     }
   },
 
-  getUserByID: async (req, res, next) => {
+  getUserById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) return next(ApiError.NotFound('Пользователь не найден'));
+      if (!ObjectId.isValid(id))
+        return next(ApiError.NotFound('Пользователь не найден'));
       const userId = req.user.userId;
-      const { userDto, isFollowing } = await userService.getUserByID(id, userId);
+      const { userDto, isFollowing } = await userService.getUserById(
+        id,
+        userId,
+      );
       res.json({ ...userDto, isFollowing });
     } catch (error) {
       next(error);
@@ -53,7 +60,10 @@ const UserController = {
         return next(ApiError.UnauthorizedError());
       }
       const filePath = req?.file?.path;
-      const userDto = await userService.updateUser(id, { ...req.body, filePath });
+      const userDto = await userService.updateUser(id, {
+        ...req.body,
+        filePath,
+      });
       res.json(userDto);
     } catch (error) {
       next(error);

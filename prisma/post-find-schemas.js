@@ -5,8 +5,8 @@ class FindSchemas {
         likes: true,
         author: {
           select: {
-            id: true,
             avatarUrl: true,
+            name: true,
           },
         },
         comments: true,
@@ -26,7 +26,7 @@ class FindSchemas {
           include: {
             user: {
               select: {
-                id: true,
+                name: true,
                 avatarUrl: true,
               },
             },

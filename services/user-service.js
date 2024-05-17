@@ -17,11 +17,11 @@ class UserService {
   async registration(email, password, name) {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      throw ApiError.BadRequest('пользователь с таким email уже существует');
+      throw ApiError.BadRequest('Пользователь с таким email уже существует');
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const png = toPng(`${name}${Date.now()}`, 200);
-    const avatarName = `${name}_${Date.now()}.png`;
+    const avatarName = `${Math.random().toFixed(5) * 10e5}_${Date.now()}.png`;
     const avatarPath = path.join(__dirname, '/../uploads', avatarName);
     fs.writeFileSync(avatarPath, png);
 
@@ -56,7 +56,7 @@ class UserService {
     return token;
   }
 
-  async getUserByID(id, userId) {
+  async getUserById(id, userId) {
     const user = await prisma.user.findUnique({
       where: { id },
       include: {
@@ -108,7 +108,9 @@ class UserService {
       },
     });
     const userDto = new UserDto(user);
-    console.log(`Пользователь с id: ${id} успешно обновил данные своего профиля`);
+    console.log(
+      `Пользователь с id: ${id} успешно обновил данные своего профиля`,
+    );
     return userDto;
   }
 
@@ -120,12 +122,24 @@ class UserService {
       include: {
         followers: {
           include: {
-            follower: true,
+            follower: {
+              select: {
+                name: true,
+                avatarUrl: true,
+                id: true,
+              },
+            },
           },
         },
         following: {
           include: {
-            following: true,
+            following: {
+              select: {
+                name: true,
+                avatarUrl: true,
+                id: true,
+              },
+            },
           },
         },
       },

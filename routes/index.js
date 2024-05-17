@@ -9,7 +9,10 @@ import {
   UserController,
 } from '../controllers/index.js';
 import { body, checkSchema } from 'express-validator';
-import { schemaRegistration, schemaLogin } from '../validations-schemas/index.js';
+import {
+  schemaRegistration,
+  schemaLogin,
+} from '../validations-schemas/index.js';
 
 import { authenticateToken } from '../middlewares/auth.js';
 
@@ -26,11 +29,20 @@ const storage = multer.diskStorage({
 const uploads = multer({ storage });
 
 //User routes
-router.post('/registration', checkSchema(schemaRegistration), UserController.registration);
+router.post(
+  '/registration',
+  checkSchema(schemaRegistration),
+  UserController.registration,
+);
 router.post('/login', checkSchema(schemaLogin), UserController.login);
 router.get('/current', authenticateToken, UserController.current);
-router.get('/users/:id', authenticateToken, UserController.getUserByID);
-router.put('/users/:id', authenticateToken, UserController.updateUser);
+router.get('/users/:id', authenticateToken, UserController.getUserById);
+router.put(
+  '/users/:id',
+  authenticateToken,
+  uploads.single('avatar'),
+  UserController.updateUser,
+);
 
 //Post routes
 router.post('/posts', authenticateToken, PostController.createPost);
@@ -40,11 +52,15 @@ router.delete('/posts/:id', authenticateToken, PostController.deletePost);
 
 //Comment routes
 router.post('/comments', authenticateToken, CommentController.createComment);
-router.delete('/comments/:id', authenticateToken, CommentController.deleteComment);
+router.delete(
+  '/comments/:id',
+  authenticateToken,
+  CommentController.deleteComment,
+);
 
 //Like routes
 router.post('/likes', authenticateToken, LikeController.likePost);
-router.delete('/likes', authenticateToken, LikeController.unlikePost);
+router.delete('/likes/:id', authenticateToken, LikeController.unlikePost);
 
 //Follow routes
 router.post('/follow', authenticateToken, FollowController.followUser);

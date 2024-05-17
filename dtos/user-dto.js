@@ -1,14 +1,20 @@
 export class UserDto {
   id;
-  // email;
+  email;
+  // password;
   name;
   avatarUrl;
   dateOfBirth;
   createdAt;
+  updatedAt;
   bio;
   location;
-  followers;
+  posts;
   following;
+  followers;
+  like;
+  comments;
+  isFollowing;
   constructor(model) {
     for (let key of Object.keys(this)) {
       this[key] = model[key];

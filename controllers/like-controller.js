@@ -22,7 +22,7 @@ const LikeController = {
     }
   },
   unlikePost: async (req, res, next) => {
-    const postId = req.body.postId;
+    const postId = req.params.id;
     const userId = req.user.userId;
 
     if (!postId) return next(ApiError.NotFound('Пост не найден'));
